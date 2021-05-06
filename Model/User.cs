@@ -1,83 +1,64 @@
-﻿using System;
+﻿using Server.Models;
+using System;
 using System.Collections.Generic;
-using Model;
+using System.Text;
 
-namespace Server.Models
+namespace Model
 {
-
     public class User
     {
-        public int Id { get; set; }
+        private string _username;
 
-        public string Username { get; set; }
+        private string _password;
 
-        public string Password { get; set; }
+        private string _email;
 
-        public string Email { get; set; }
+        private Uri _profilePicture;
 
-        public Uri ProfilePicture { get; set; }
+        private List<Shook> _shooks;
 
-        public virtual ICollection<Shook> Shooks { get; set; }
-
-        /*public virtual ICollection<Shook> CreatedShooks
-        {
-            get
-            {
-                var createdList = new List<Shook>();
-
-                foreach (Shook shook in Shooks)
-                {
-                    if (shook.Creator == this)
-                    {
-                        createdList.Add(shook);
-                    }
-                }
-
-                return createdList;
-            }
+        public string Username 
+        { 
+            get => _username; 
+            set => _username = value; 
         }
 
-        public virtual ICollection<Shook> WonShooks
-        {
-            get
-            {
-                var wonShooks = new List<Shook>();
-
-                foreach (Shook shook in Shooks)
-                {
-                    if (shook.Winner.Id == this.Id)
-                    {
-                        wonShooks.Add(shook);
-                    }
-                }
-
-                return wonShooks;
-            }
-        }*/
-
-        public User()
-        {
-            Shooks = new List<Shook>();
+        public string Password 
+        { 
+            get => _password;
+            set => _password = value; 
         }
 
-        public void CreateShook()
-        {
-            throw new NotImplementedException();
+        public string Email 
+        { 
+            get => _email;
+            set => _email = value; 
         }
 
-        public void EditShook()
-        {
-            throw new NotImplementedException();
+        public Uri ProfilePicture 
+        { 
+            get => _profilePicture; 
+            set => _profilePicture = value; 
         }
 
-        public void JoinShook(Shook shook)
+        public List<Shook> Shooks
         {
-            throw new NotImplementedException();
+            get => _shooks;
+            set => _shooks = value;
         }
 
-        public void LeaveShook(Shook shook)
+        public User(UserDto userDto)
         {
-            throw new NotImplementedException();
+            _username = userDto.Username;
+            _password = userDto.Password;
+            _email = userDto.Email;
+            _profilePicture = userDto.ProfilePicture;
+            _shooks = SetShookList(userDto);
+        }
+
+        private List<Shook> SetShookList(UserDto userDto)
+        {
+            return new List<Shook>();
         }
     }
 }

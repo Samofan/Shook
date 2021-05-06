@@ -26,22 +26,64 @@ namespace Server.Controllers
 
         [HttpGet]
         public ICollection<User> Get()
-        { 
-            return _dbContext.Users.ToListAsync().Result;
+        {
+            return CreateUsersList(_dbContext.Users.ToListAsync().Result);
         }
 
         [HttpGet]
         [Route("{userId}")]
-        public User GetUser(int userId)
+        public UserDto GetUser(int userId)
         {
             return _dbContext.Users.SingleAsync(u => u.Id == userId).Result;
         }
 
-        private List<User> GetDummyUsers()
+        private List<User> CreateUsersList(ICollection<UserDto> userDtos)
         {
-            var users = new List<User>();
+            var returnList = new List<User>();
 
-            users.Add(new User()
+            foreach (UserDto userDto in userDtos)
+            {
+                var user = new User(userDto);
+                user.Shooks = _dbContext.GetShooksOfUser(userDto);
+                returnList.Add(user);
+            }
+
+            return returnList;
+        }
+
+        private void CreateDummyData()
+        {
+            ShookDto shook = CreateShook();
+            UserDto flo = GetDummyUsers()[0];
+            UserDto lea = GetDummyUsers()[1];
+            shook.Creator = flo;
+            shook.Winner = lea;
+
+            UserShookDto userShook1 = new UserShookDto();
+            UserShookDto userShook2 = new UserShookDto();
+
+            userShook1.User = flo;
+            userShook1.Shook = shook;
+
+            userShook2.User = lea;
+            userShook2.Shook = shook;
+
+            shook.ShookUsers.Add(userShook1);
+            shook.ShookUsers.Add(userShook2);
+
+            _dbContext.Users.Add(flo);
+            _dbContext.Users.Add(lea);
+            _dbContext.SaveChanges();
+
+            _dbContext.Shooks.Add(shook);
+            _dbContext.SaveChanges();
+        }
+
+        private List<UserDto> GetDummyUsers()
+        {
+            var users = new List<UserDto>();
+
+            users.Add(new UserDto()
             {
                 Email = "dinter.florian@googlemail.com",
                 Username = "Samofan",
@@ -49,7 +91,7 @@ namespace Server.Controllers
                 ProfilePicture = new Uri("https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/ULi-Logo.svg/2880px-ULi-Logo.svg.png")
             });
 
-            users.Add(new User()
+            users.Add(new UserDto()
             {
                 Email = "leajjohanna@mail.com",
                 Username = "leajjohanna",
@@ -60,20 +102,15 @@ namespace Server.Controllers
             return users;
         }
 
-        private Shook CreateShook()
+        private ShookDto CreateShook()
         {
-            var shook = new Shook()
+            var shook = new ShookDto()
             {
-                Title = "Test",
-                Description = "Database test",
-                CreatorId = 1,
+                Title = "Another Shook",
+                Description = "Another Database test",
                 StartTime = DateTime.Now,
                 EndTime = DateTime.MaxValue,
-                WinnerId = 0
             };
-
-            shook.Member.Add(_dbContext.Users.SingleAsync(u => u.Id == 1).Result);
-            shook.Member.Add(_dbContext.Users.SingleAsync(u => u.Id == 2).Result);
 
             return shook;
         }

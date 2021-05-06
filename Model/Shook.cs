@@ -1,40 +1,76 @@
-﻿using System;
+﻿using Server.Models;
+using System;
 using System.Collections.Generic;
-using Server.Models;
+using System.Text;
 
 namespace Model
 {
     public class Shook
     {
-        public int Id { get; set; }
+        private string _title;
 
-        public string Title { get; set; }
+        private string _description;
 
-        public string Description { get; set; }
+        private DateTime _startTime;
 
-        public DateTime StartTime { get; set; }
+        private DateTime _endTime;
 
-        public DateTime EndTime { get; set; }
+        private User _creator;
 
-        public List<User> Member { get; set; }
+        private User _winner;
 
-        public int CreatorId { get; set; }
+        private List<User> _members;
 
-        public int WinnerId { get; set; }
-
-        public Shook()
+        public string Title 
         {
-            Member = new List<User>();
+            get => _title;
+            set => _title = value; 
         }
 
-        public void Start()
-        {
-            throw new NotImplementedException();
+        public string Description 
+        { 
+            get => _description;
+            set => _description = value; 
         }
 
-        public void End()
+        public DateTime StartTime 
+        { 
+            get => _startTime; 
+            set => _startTime = value; 
+        }
+
+        public DateTime EndTime 
+        { 
+            get => _endTime; 
+            set => _endTime = value; 
+        }
+
+        public User Creator 
+        { 
+            get => _creator; 
+            set => _creator = value; 
+        }
+
+        public User Winner 
+        { 
+            get => _winner;
+            set => _winner = value; 
+        }
+
+        public Shook(ShookDto shookDto)
         {
-            throw new NotImplementedException();
+            _title = shookDto.Title;
+            _description = shookDto.Description;
+            _startTime = shookDto.StartTime;
+            _endTime = shookDto.EndTime;
+            _creator = new User(shookDto.Creator);
+            _winner = new User(shookDto.Winner);
+            _members = SetMemberList(shookDto);
+        }
+
+        private List<User> SetMemberList(ShookDto shookDto)
+        {
+            return new List<User>();
         }
     }
 }

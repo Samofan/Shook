@@ -1,15 +1,18 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Model;
 using Server.Models;
+using System;
+using System.Collections.Generic;
 
 namespace Server.Database
 {
     public class ApplicationDbContext : DbContext
     {
-        public DbSet<User> Users { get; set; }
+        public DbSet<UserDto> Users { get; set; }
 
-        public DbSet<Shook> Shooks { get; set; }
+        public DbSet<ShookDto> Shooks { get; set; }
+
+        //public DbSet<UserShookDto> ShookUsers { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
@@ -19,30 +22,50 @@ namespace Server.Database
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // Primary key of user.
-            modelBuilder.Entity<User>()
+            modelBuilder.Entity<UserDto>()
                 .HasKey(u => u.Id);
 
-            // Some ignored properties for user.
-            //modelBuilder.Entity<User>()
-            //    .Ignore(u => u.CreatedShooks)
-            //    .Ignore(u => u.WonShooks);
-
             // Primary key for shook.
-            modelBuilder.Entity<Shook>()
+            modelBuilder.Entity<ShookDto>()
                 .HasKey(s => s.Id);
 
             // Foreign key to the creator.
-            /*modelBuilder.Entity<Shook>()
+            modelBuilder.Entity<ShookDto>()
                 .HasOne(u => u.Creator);
 
             // Foreign key to the winner.
-            modelBuilder.Entity<Shook>()
-                .HasOne(u => u.Winner);*/
+            modelBuilder.Entity<ShookDto>()
+                .HasOne(u => u.Winner);
 
-            // Many to many relationship betwenn user and shook.
-            modelBuilder.Entity<Shook>()
-                .HasMany(u => u.Member)
-                .WithMany(u => u.Shooks);          
+            modelBuilder.Entity<UserShookDto>().HasKey(us => new { us.UserDtoId, us.ShookDtoId });
+
+            modelBuilder.Entity<UserShookDto>()
+                .HasOne(u => u.User)
+                .WithMany(us => us.UserShooks)
+                .HasForeignKey(us => us.UserDtoId);
+
+            modelBuilder.Entity<UserShookDto>()
+                .HasOne(s => s.Shook)
+                .WithMany(us => us.ShookUsers)
+                .HasForeignKey(us => us.ShookDtoId);
+        }
+
+        internal List<Shook> GetShooksOfUser(UserDto userDto)
+        {
+            var returnList = new List<Shook>();
+
+            foreach (ShookDto shookDto in Shooks.Include(su => su.ShookUsers))
+            {
+                foreach (UserShookDto userShookDto in shookDto.ShookUsers)
+                {
+                    if (userShookDto.User == userDto)
+                    {
+                        returnList.Add(new Shook(userShookDto.Shook));
+                    }
+                }
+            }
+
+            return returnList;
         }
     }
 }

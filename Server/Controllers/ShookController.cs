@@ -24,32 +24,32 @@ namespace Server.Controllers
         }
 
         [HttpGet]
-        public ICollection<Shook> Get()
+        public ICollection<ShookDto> Get()
         {
             return _dbContext.Shooks.ToListAsync().Result;
         }
 
         [HttpGet]
         [Route("{userId}")]
-        public ICollection<Shook> GetShooksOfUser(int userId)
+        public ICollection<ShookDto> GetShooksOfUser(int userId)
         {
             var user = _dbContext.Users.SingleAsync(u => u.Id == userId).Result;
 
-            var shooksOfUser = new List<Shook>();
+            /*var shooksOfUser = new List<ShookDto>();
             var allShooks = _dbContext.Shooks
-                .Include(s => s.Member)
+                .Include(s => s.Members)
                 .ToListAsync()
                 .Result;
 
-            foreach (Shook shook in allShooks)
+            foreach (ShookDto shook in allShooks)
             {
-                if (shook.Member.Contains(user))
+                if (shook.Members.Contains(user))
                 {
                     shooksOfUser.Add(shook);
                 }
-            }
+            }*/
 
-            return shooksOfUser;
+            return new List<ShookDto>();
         }
     }
 }

@@ -19,7 +19,7 @@ namespace Model.Login
         /// This field contains the user who logged in. Applications can fill
         /// their account page with these information.
         /// </summary>
-        private User _accountUser { get; set; }
+        private UserDto _accountUser { get; set; }
 
         /// <summary>
         /// The api key is used to authenticate at the REST api.
@@ -43,7 +43,7 @@ namespace Model.Login
         /// <summary>
         /// Property of _accountUser.
         /// </summary>
-        public User AccountUser
+        public UserDto AccountUser
         {
             get => _accountUser;
             set => _accountUser = value;
