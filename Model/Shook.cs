@@ -63,8 +63,9 @@ namespace Model
             _description = shookDto.Description;
             _startTime = shookDto.StartTime;
             _endTime = shookDto.EndTime;
-            _creator = new User(shookDto.Creator);
-            _winner = new User(shookDto.Winner);
+            // TODO: Set creator and winner.
+            _creator = new User();
+            _winner = new User();
             _members = SetMemberList(shookDto);
         }
 

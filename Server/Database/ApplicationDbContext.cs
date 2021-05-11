@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Model;
 using Server.Models;
 using System;
@@ -6,17 +7,21 @@ using System.Collections.Generic;
 
 namespace Server.Database
 {
+    /// <summary>
+    /// Handles interactions with the database.
+    /// </summary>
     public class ApplicationDbContext : DbContext
     {
+        private readonly ILogger<ApplicationDbContext> _logger;
+
         public DbSet<UserDto> Users { get; set; }
 
         public DbSet<ShookDto> Shooks { get; set; }
 
-        //public DbSet<UserShookDto> ShookUsers { get; set; }
-
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options,
+            ILogger<ApplicationDbContext> logger) : base(options)
         {
-
+            _logger = logger;
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -50,9 +55,67 @@ namespace Server.Database
                 .HasForeignKey(us => us.ShookDtoId);
         }
 
-        internal List<Shook> GetShooksOfUser(UserDto userDto)
+        /// <summary>
+        /// Gets a <see cref="User"/> by its username.
+        /// </summary>
+        /// <param name="username">The username to search for.</param>
+        /// <returns>A <see cref="User"/>.</returns>
+        public User GetUserByUsername(string username)
         {
-            var returnList = new List<Shook>();
+            // TODO: Maybe out source this code to another Repository Class?
+            var user = new User();
+
+            try
+            {
+                var userDto = Users
+                    .SingleAsync(u => u.Username.Equals(username))
+                    .Result;
+                user = new User(userDto);
+            }
+            catch (AggregateException)
+            {
+                _logger.LogError("User with username {} could not be found",
+                    username);
+            }
+
+            return user;
+        }
+
+        /// <summary>
+        /// Gets a <see cref="User"/> by its id.
+        /// </summary>
+        /// <param name="userId">The user id.</param>
+        /// <returns>A <see cref="User"/>.</returns>
+        public User GetUserById(int userId)
+        {
+            var user = new User();
+
+            try
+            {
+                var userDto = Users
+                    .SingleAsync(u => u.Id == userId)
+                    .Result;
+                user = new User(userDto);
+            }
+            catch (AggregateException)
+            {
+                _logger.LogError("User with id {} could not be found", userId);
+            }
+
+            return user;
+        }
+
+        /// <summary>
+        /// Gets all <see cref="Shook"/> that are related to this user.
+        /// </summary>
+        /// <param name="user">The user.</param>
+        /// <returns>A list of <see cref="Shook"/>.</returns>
+        public List<Shook> GetShooksOfUserByUser(User user)
+        {
+            var shooksOfUser = new List<Shook>();
+            var userDto = Users
+                .SingleAsync(u => u.Username.Equals(user.Username))
+                .Result;
 
             foreach (ShookDto shookDto in Shooks.Include(su => su.ShookUsers))
             {
@@ -60,12 +123,23 @@ namespace Server.Database
                 {
                     if (userShookDto.User == userDto)
                     {
-                        returnList.Add(new Shook(userShookDto.Shook));
+                        shooksOfUser.Add(new Shook(userShookDto.Shook));
                     }
                 }
             }
 
-            return returnList;
+            return shooksOfUser;
+        }
+
+        /// <summary>
+        /// Gets all <see cref="Shook"/> that are related to this user.
+        /// </summary>
+        /// <param name="userId">The user id.</param>
+        /// <returns>A list of <see cref="Shook"/>.</returns>
+        public List<Shook> GetShooksOfUserById(int userId)
+        {
+            var userDto = Users.SingleAsync(u => u.Id == userId).Result;
+            return GetShooksOfUserByUser(new User(userDto));
         }
     }
 }

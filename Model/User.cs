@@ -56,6 +56,10 @@ namespace Model
             _shooks = SetShookList(userDto);
         }
 
+        public User()
+        {
+        }
+
         private List<Shook> SetShookList(UserDto userDto)
         {
             return new List<Shook>();

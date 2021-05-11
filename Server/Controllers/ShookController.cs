@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -30,26 +29,21 @@ namespace Server.Controllers
         }
 
         [HttpGet]
-        [Route("{userId}")]
-        public ICollection<ShookDto> GetShooksOfUser(int userId)
+        [Route("ofUser")]
+        public ICollection<Shook> GetShooksOfUser([FromQuery] User user,
+            [FromQuery] int userId)
         {
-            var user = _dbContext.Users.SingleAsync(u => u.Id == userId).Result;
+            return userId == 0 ? GetShooksOfUserByUser(user) : GetShooksOfUserById(userId);
+        }
 
-            /*var shooksOfUser = new List<ShookDto>();
-            var allShooks = _dbContext.Shooks
-                .Include(s => s.Members)
-                .ToListAsync()
-                .Result;
+        private ICollection<Shook> GetShooksOfUserByUser(User user)
+        {
+            return _dbContext.GetShooksOfUserByUser(user);
+        }
 
-            foreach (ShookDto shook in allShooks)
-            {
-                if (shook.Members.Contains(user))
-                {
-                    shooksOfUser.Add(shook);
-                }
-            }*/
-
-            return new List<ShookDto>();
+        private ICollection<Shook> GetShooksOfUserById(int userId)
+        {
+            return _dbContext.GetShooksOfUserById(userId);
         }
     }
 }
