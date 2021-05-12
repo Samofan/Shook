@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -9,6 +10,7 @@ namespace Server.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [Authorize]
     public class ShookController
     {
         private readonly ILogger<ShookController> _logger;
