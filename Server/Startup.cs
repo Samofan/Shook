@@ -58,6 +58,13 @@ namespace Server
             {
                 endpoints.MapControllers();
             });
+
+            // Create database and tables at first startup.
+            using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+            {
+                var context = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                context.Database.Migrate();
+            }
         }
 
         /// <summary>

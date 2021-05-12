@@ -18,6 +18,8 @@ namespace Server.Database
 
         public DbSet<ShookDto> Shooks { get; set; }
 
+        public DbSet<UserShookDto> UserShooks { get; set; }
+
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options,
             ILogger<ApplicationDbContext> logger) : base(options)
         {
