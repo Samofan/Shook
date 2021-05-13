@@ -9,7 +9,7 @@ COPY Shook/Model/Model.csproj ./Model/
 RUN dotnet restore
 
 # copy everything else and build app
-COPY Shook/. ./Shook
+COPY ./Shook ./Shook
 WORKDIR /source/Shook
 RUN dotnet publish -c Release -o /app
 
