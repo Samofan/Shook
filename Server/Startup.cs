@@ -29,6 +29,7 @@ namespace Server
                 options.UseNpgsql(
                     Configuration.GetConnectionString("DefaultDatabaseConnection")));
             services.AddSwaggerGen();
+            services.AddHttpContextAccessor();
             SetupJWTServices(services);
         }
 
@@ -58,13 +59,6 @@ namespace Server
             {
                 endpoints.MapControllers();
             });
-
-            // Create database and tables at first startup.
-            using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
-            {
-                var context = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-                context.Database.Migrate();
-            }
         }
 
         /// <summary>

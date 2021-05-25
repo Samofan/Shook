@@ -71,6 +71,32 @@ namespace Server.Controllers
             return userId == 0 ? GetUserByUsername(username) : GetUserById(userId);
         }
 
+        [HttpPost]
+        [AllowAnonymous]
+        [Route("create")]
+        public void CreateUser(User user)
+        {
+            if (CheckUser(user))
+            {
+                var userDto = new UserDto
+                {
+                    Email = user.Email,
+                    Username = user.Username,
+                    Password = user.Password,
+                    ProfilePicture = user.ProfilePicture
+                };
+
+                _dbContext.Users.Add(userDto);
+                _dbContext.SaveChanges();
+
+            }
+        }
+
+        private bool CheckUser(User user)
+        {
+            return true;
+        }
+
         /// <summary>
         /// Gets a specific user depending on their id.
         /// </summary>

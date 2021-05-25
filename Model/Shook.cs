@@ -1,12 +1,12 @@
-﻿using Server.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Model
 {
     public class Shook
     {
+        private int _id;
+
         private string _title;
 
         private string _description;
@@ -20,6 +20,12 @@ namespace Model
         private User _winner;
 
         private List<User> _members;
+
+        public int Id
+        {
+            get => _id;
+            set => _id = value;
+        }
 
         public string Title 
         {
@@ -67,6 +73,11 @@ namespace Model
             _creator = new User();
             _winner = new User();
             _members = SetMemberList(shookDto);
+        }
+        
+        public Shook()
+        {
+
         }
 
         private List<User> SetMemberList(ShookDto shookDto)

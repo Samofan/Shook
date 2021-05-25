@@ -21,5 +21,10 @@ namespace Model
         public UserDto Winner { get; set; }
 
         public List<UserShookDto> ShookUsers { get; set; } = new List<UserShookDto>();
+
+        public ShookDto()
+        {
+
+        }
     }
 }

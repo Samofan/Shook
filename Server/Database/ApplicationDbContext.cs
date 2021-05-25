@@ -4,6 +4,7 @@ using Model;
 using Server.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Server.Database
 {
@@ -105,6 +106,25 @@ namespace Server.Database
             }
 
             return user;
+        }
+
+        public UserDto GetUserDtoByUser(User user)
+        {
+            return GetUserDtoByUsername(user.Username);
+        }
+
+        public UserDto GetUserDtoByUsername(string username)
+        {
+            var userDto = Users
+                .SingleAsync(u => u.Username.Equals(username))
+                .Result;
+
+            return userDto;
+        }
+
+        public ShookDto GetShookDtoByShook(Shook shook)
+        {
+            return Shooks.SingleAsync(s => s.Id == shook.Id).Result;
         }
 
         /// <summary>
